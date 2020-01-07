@@ -1,0 +1,4 @@
+TODO LIST
+    -- Make mouse movent relative.
+    -- Implement LIBGBM into FBDEV/DRM drivers.
+    -- Remove unused code (property.c)

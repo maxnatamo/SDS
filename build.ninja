@@ -1,0 +1,57 @@
+NAME     = sds
+VERSION  = 1.0.0
+
+XOPEN    = 700
+STD      = gnu99
+
+ROOT     = .
+BUILD    = $ROOT/build
+SRC      = $ROOT/src
+
+CC       = gcc
+INCS     = -I$ROOT -I$ROOT/inc $
+          `pkg-config --cflags libdrm` $
+          `pkg-config --cflags libevdev`
+
+LIBS     = -lm -lpthread $
+           `pkg-config --libs libdrm` $
+           `pkg-config --libs libevdev`
+
+CFLAGS   = -g -Wall -pipe -O2 -std=$STD -DVERSION='"$VERSION"' -D_XOPEN_SOURCE=$XOPEN
+LDFLAGS  = -L$BUILD
+
+rule cc
+    command = $CC $CFLAGS $INCS -c $in -o $out
+    description = CC $out
+
+rule link
+    command = $CC $LDFLAGS $LIBS -o $out $in
+    description = LINK $out
+
+build $BUILD/core/main.o:               cc $SRC/core/main.c
+build $BUILD/core/connection.o:         cc $SRC/core/connection.c
+build $BUILD/core/property.o:           cc $SRC/core/property.c
+build $BUILD/core/events.o:             cc $SRC/core/events.c
+build $BUILD/drm/drm.o:                 cc $SRC/drm/drm.c
+build $BUILD/drm/drawing.o:             cc $SRC/drm/drawing.c
+build $BUILD/utils/utils.o:             cc $SRC/utils/utils.c
+build $BUILD/utils/vector.o:            cc $SRC/utils/vector.c
+build $BUILD/utils/colors.o:            cc $SRC/utils/colors.c
+build $BUILD/utils/log.o:               cc $SRC/utils/log.c
+build $BUILD/utils/queue.o:             cc $SRC/utils/queue.c
+build $BUILD/input/core.o:              cc $SRC/input/core.c
+build $BUILD/input/evdev.o:             cc $SRC/input/evdev.c
+
+build $NAME: link $BUILD/core/main.o $
+                  $BUILD/core/connection.o $
+                  $BUILD/core/property.o $
+                  $BUILD/core/events.o $
+                  $BUILD/drm/drm.o $
+                  $BUILD/drm/drawing.o $
+                  $BUILD/utils/utils.o $
+                  $BUILD/utils/vector.o $
+                  $BUILD/utils/colors.o $
+                  $BUILD/utils/log.o $
+                  $BUILD/utils/queue.o $
+                  $BUILD/input/core.o $
+                  $BUILD/input/evdev.o
